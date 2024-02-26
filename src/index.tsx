@@ -1,7 +1,8 @@
 import {
-  HtmlMetaDescriptor,
+  MetaDescriptor,
   useLoaderData as useRemixLoaderData,
 } from '@remix-run/react';
+// import { ServerRuntimeMetaDescriptor } from '@remix-run/server-runtime';
 
 import { json as remixJson, MetaFunction } from '@remix-run/node';
 import { serialize, deserialize } from 'superjson';
@@ -12,7 +13,7 @@ type MetaArgs = Parameters<MetaFunction>[0];
 type MetaArgsSansData = Omit<MetaArgs, 'data'>;
 
 type SuperJSONMetaFunction<Data> = {
-  (args: MetaArgsSansData & { data: Data }): HtmlMetaDescriptor;
+  (args: MetaArgsSansData & { data: Data }): MetaDescriptor;
 };
 
 export const json = <Data,>(
@@ -31,8 +32,8 @@ export const withSuperJSON = <Data,>(
 ): SuperJSONMetaFunction<Data> => ({
   data,
   ...rest
-}: MetaArgs): HtmlMetaDescriptor =>
-  metaFn({ ...rest, data: parse<Data>(data) });
+}: MetaArgs): MetaDescriptor =>
+  metaFn({ ...rest, data: parse<Data>(data as any) }) as any;
 
 export const useLoaderData = <Data,>() => {
   const loaderData = useRemixLoaderData<any>(); // HACK: any to avoid type error
